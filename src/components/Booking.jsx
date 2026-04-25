@@ -3,7 +3,7 @@ import { db } from "../firebase"; // adjust path as needed
 import { ref, push, serverTimestamp } from "firebase/database";
 
 const WHATSAPP_NUMBER = "919054270660";
-const RAZORPAY_KEY_ID = "YOUR_RAZORPAY_KEY_ID"; // replace with your key
+const RAZORPAY_KEY_ID = "rzp_test_ShJjqbkRwxYj4j"; // replace with your key
 
 // Load Razorpay script dynamically
 function loadRazorpayScript() {
@@ -72,104 +72,106 @@ export default function Booking() {
     initiatePayment();
   };
 
-  const initiatePayment = () => {
-    const newBookingId = generateBookingId();
-    setBookingId(newBookingId);
+const initiatePayment = () => {
+  const newBookingId = generateBookingId();
+  setBookingId(newBookingId);
 
-    const options = {
-      key: rzp_test_SgvXY0A0SdBnap,
-      amount: 50000, // ₹500 in paise
-      currency: "INR",
-      name: "NikloSafar",
-      description: `Booking Advance — ${form.service}`,
-      image: "/logo.png", // optional: your logo URL
-      prefill: {
-        name: form.name,
-        contact: form.phone,
+  const capturedForm = { ...form };
+
+  const options = {
+    key: RAZORPAY_KEY_ID,
+    amount: 50000,
+    currency: "INR",
+    name: "NikloSafar",
+    description: `Booking Advance — ${capturedForm.service}`,
+    // image: "/logo.png",
+    prefill: {
+      name: capturedForm.name,
+      contact: capturedForm.phone,
+    },
+    notes: {
+      booking_id: newBookingId,
+      route: capturedForm.route,
+      service: capturedForm.service,
+      travel_date: capturedForm.date,
+    },
+    theme: {
+      color: "#D4A853",
+    },
+    modal: {
+      ondismiss: () => {
+        setLoading(false);
+        setStep("form");
+        setError("Payment was cancelled. Please try again to confirm your booking.");
       },
-      notes: {
-        booking_id: newBookingId,
-        route: form.route,
-        service: form.service,
-        travel_date: form.date,
-      },
-      theme: {
-        color: "#D4A853",
-      },
-      modal: {
-        ondismiss: () => {
-          setLoading(false);
-          setStep("form");
-          setError("Payment was cancelled. Please try again to confirm your booking.");
-        },
-      },
-      handler: async (response) => {
-        await saveBookingToFirebase(newBookingId, response);
-      },
+    },
+    handler: async (response) => {
+      await saveBookingToFirebase(newBookingId, response, capturedForm);
+    },
+  };
+
+  setStep("paying");
+  const razorpay = new window.Razorpay(options);
+  razorpay.on("payment.failed", (response) => {
+    setLoading(false);
+    setStep("form");
+    setError(`Payment failed: ${response.error.description}. Please try again.`);
+  });
+  razorpay.open();
+  setLoading(false);
+};
+
+const saveBookingToFirebase = async (bId, paymentResponse, capturedForm) => {
+   console.log("🔥 saveBookingToFirebase called", bId, paymentResponse, capturedForm);
+  try {
+    const bookingData = {
+      bookingId: bId,
+      name: capturedForm.name,       // ✅ form state se nahi
+      phone: capturedForm.phone,
+      date: capturedForm.date,
+      time: capturedForm.time || "Not specified",
+      service: capturedForm.service,
+      route: capturedForm.route,
+      message: capturedForm.message || "",
+      advancePaid: 500,
+      paymentId: paymentResponse.razorpay_payment_id,
+      paymentOrderId: paymentResponse.razorpay_order_id || "",
+      paymentSignature: paymentResponse.razorpay_signature || "",
+      status: "confirmed",
+      createdAt: serverTimestamp(),
     };
 
-    setStep("paying");
-    const razorpay = new window.Razorpay(options);
-    razorpay.on("payment.failed", (response) => {
-      setLoading(false);
-      setStep("form");
-      setError(`Payment failed: ${response.error.description}. Please try again.`);
-    });
-    razorpay.open();
+    await push(ref(db, "bookings"), bookingData);
+     console.log("✅ Firebase push success");
+    setStep("success");
+   
     setLoading(false);
-  };
+    openWhatsAppConfirmation(bId, paymentResponse.razorpay_payment_id, capturedForm); // ✅
+  } catch (err) {
+    console.error("Firebase save error:", err);
+    setStep("success");
+    openWhatsAppConfirmation(bId, paymentResponse.razorpay_payment_id, capturedForm);
+  }
+};
 
-  const saveBookingToFirebase = async (bId, paymentResponse) => {
-    try {
-      const bookingData = {
-        bookingId: bId,
-        name: form.name,
-        phone: form.phone,
-        date: form.date,
-        time: form.time || "Not specified",
-        service: form.service,
-        route: form.route,
-        message: form.message || "",
-        advancePaid: 500,
-        paymentId: paymentResponse.razorpay_payment_id,
-        paymentOrderId: paymentResponse.razorpay_order_id || "",
-        paymentSignature: paymentResponse.razorpay_signature || "",
-        status: "confirmed",
-        createdAt: serverTimestamp(),
-      };
-
-      // Save to Firebase Realtime Database under /bookings
-      await push(ref(db, "bookings"), bookingData);
-
-      setStep("success");
-      setLoading(false);
-      openWhatsAppConfirmation(bId, paymentResponse.razorpay_payment_id);
-    } catch (err) {
-      console.error("Firebase save error:", err);
-      setStep("success"); // Still show success since payment was made
-      setError("Booking saved. If you face issues, contact us on WhatsApp.");
-      openWhatsAppConfirmation(bId, paymentResponse.razorpay_payment_id);
-    }
-  };
-
-  const openWhatsAppConfirmation = (bId, paymentId) => {
-    const timeStr = form.time ? `%0APickup Time: ${form.time}` : "";
-    const msgStr = form.message ? `%0ANote: ${form.message}` : "";
-    const text =
-      `Namaste%21+I+have+completed+my+booking+with+NikloSafar.%0A%0A` +
-      `Booking+ID:+${bId}%0A` +
-      `Name:+${encodeURIComponent(form.name)}%0A` +
-      `Phone:+${encodeURIComponent(form.phone)}%0A` +
-      `Travel+Date:+${form.date}` +
-      `${timeStr}%0A` +
-      `Service:+${encodeURIComponent(form.service)}%0A` +
-      `Route:+${encodeURIComponent(form.route)}` +
-      `${msgStr}%0A%0A` +
-      `Advance+Paid:+%E2%82%B9500%0A` +
-      `Payment+ID:+${paymentId}%0A%0A` +
-      `Please+confirm+my+booking.`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank");
-  };
+ const openWhatsAppConfirmation = (bId, paymentId, capturedForm) => {
+  const timeStr = capturedForm.time ? `%0APickup Time: ${capturedForm.time}` : "";
+  const msgStr = capturedForm.message ? `%0ANote: ${capturedForm.message}` : "";
+  const text =
+    `Namaste%21+I+have+completed+my+booking+with+NikloSafar.%0A%0A` +
+    `Booking+ID:+${bId}%0A` +
+    `Name:+${encodeURIComponent(capturedForm.name)}%0A` +
+    `Phone:+${encodeURIComponent(capturedForm.phone)}%0A` +
+    `Travel+Date:+${capturedForm.date}` +
+    `${timeStr}%0A` +
+    `Service:+${encodeURIComponent(capturedForm.service)}%0A` +
+    `Route:+${encodeURIComponent(capturedForm.route)}` +
+    `${msgStr}%0A%0A` +
+    `Advance+Paid:+%E2%82%B9500%0A` +
+    `Payment+ID:+${paymentId}%0A%0A` +
+    `Please+confirm+my+booking.`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank");
+};
 
   const handleWhatsAppDirect = () => {
     window.open(
