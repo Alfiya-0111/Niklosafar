@@ -39,4 +39,11 @@ select option {
     padding-left: 24px !important;
     padding-right: 24px !important;
   }
+  
+}
+@media (max-width: 460px) {
+    .car_drag{
+ bottom: -35px;
+    right: calc(50% - 187px);
+    } 
 }

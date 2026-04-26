@@ -140,7 +140,9 @@ export default function Fleet() {
         />
 
         {/* 360 button */}
-        <button onClick={spin360} style={{
+        <button onClick={spin360}
+        className="car_drag"
+         style={{
           position: "absolute",
           bottom: 16,
           right: "calc(50% - 290px)",
