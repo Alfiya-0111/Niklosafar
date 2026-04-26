@@ -1,74 +1,262 @@
-export default function Hero() {
-  return (
-    <section
-      id="home"
-      className="min-h-screen bg-[#1A1A2E] flex items-center px-6 md:px-12 pt-[72px] relative overflow-hidden"
-    >
-      {/* Background pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(45deg,#D4A853 0,#D4A853 1px,transparent 0,transparent 50%)",
-          backgroundSize: "30px 30px",
-        }}
-      />
+import { useEffect, useRef } from "react";
+import { BsCalendarCheck } from "react-icons/bs";
+import { FaWhatsapp } from "react-icons/fa";
+import { TbStarFilled } from "react-icons/tb";
+import { MdVerified } from "react-icons/md";
 
-      <div className="relative z-10 max-w-2xl">
+const stats = [
+  { num: "500+", label: "Happy Trips" },
+  { num: "4.9★", label: "Avg Rating" },
+  { num: "24/7", label: "Available" },
+];
+
+export default function Hero() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = Array.from({ length: 60 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.3,
+      dx: (Math.random() - 0.5) * 0.3,
+      dy: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.5 + 0.1,
+    }));
+
+    let raf;
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212,168,83,${p.alpha})`;
+        ctx.fill();
+      });
+      raf = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <section id="home" style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #0A0A1A 0%, #141428 50%, #0f0f22 100%)",
+      display: "flex",
+      alignItems: "center",
+      padding: "72px 48px 0",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      {/* Particle canvas */}
+      <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+
+      {/* Gold radial glow */}
+      <div style={{
+        position: "absolute",
+        top: "20%",
+        left: "30%",
+        width: 600,
+        height: 600,
+        background: "radial-gradient(circle, rgba(212,168,83,0.08) 0%, transparent 65%)",
+        transform: "translate(-50%,-50%)",
+        pointerEvents: "none",
+      }} />
+
+      {/* Grid lines */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        backgroundImage: "linear-gradient(rgba(212,168,83,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(212,168,83,0.03) 1px, transparent 1px)",
+        backgroundSize: "60px 60px",
+      }} />
+
+      <div style={{ position: "relative", zIndex: 2, maxWidth: 680 }}>
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-[#D4A853]/10 border border-[#D4A853]/30 text-[#D4A853] px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-7">
-          <span className="w-1.5 h-1.5 bg-[#D4A853] rounded-full animate-pulse" />
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          background: "rgba(212,168,83,0.08)",
+          border: "1px solid rgba(212,168,83,0.3)",
+          color: "#D4A853",
+          padding: "8px 18px",
+          borderRadius: 40,
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: "2.5px",
+          textTransform: "uppercase",
+          marginBottom: 32,
+        }}>
+          <MdVerified size={14} />
           Based in Bilimora, Gujarat
+          <span style={{
+            width: 6, height: 6,
+            background: "#22c55e",
+            borderRadius: "50%",
+            animation: "pulse 2s infinite",
+          }} />
         </div>
 
-        <h1 className="font-playfair text-5xl md:text-7xl text-white leading-tight mb-6">
+        <h1 style={{
+          fontFamily: "'Playfair Display', serif",
+          fontSize: "clamp(44px, 7vw, 80px)",
+          color: "#ffffff",
+          lineHeight: 1.1,
+          marginBottom: 24,
+          fontWeight: 700,
+        }}>
           Travel in{" "}
-          <span className="text-[#D4A853]">Comfort</span>{" "}
-          &amp; Style
+          <span style={{
+            background: "linear-gradient(135deg, #D4A853, #F0C878, #D4A853)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}>Comfort</span>
+          {" "}& Style
         </h1>
 
-        <p className="text-[#8B9BB4] text-lg leading-relaxed mb-10 font-light">
+        <p style={{
+          color: "#8B9BB4",
+          fontSize: 18,
+          lineHeight: 1.75,
+          marginBottom: 40,
+          maxWidth: 520,
+          fontWeight: 300,
+        }}>
           Premium cab service for airport drops, weddings, pilgrimages &amp;
-          outstation journeys — safe, reliable &amp; on time.
+          outstation journeys — safe, reliable &amp; always on time.
         </p>
 
-        <div className="flex flex-wrap gap-4">
-          <a
-            href="#booking"
-            className="bg-[#D4A853] text-[#1A1A2E] px-8 py-3.5 rounded-lg font-semibold text-sm tracking-wide hover:bg-[#F0C878] hover:-translate-y-0.5 transition-all no-underline flex items-center gap-2"
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 64 }}>
+          <a href="#booking" style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            background: "linear-gradient(135deg, #D4A853, #F0C878)",
+            color: "#0A0A1A",
+            padding: "14px 32px",
+            borderRadius: 10,
+            fontWeight: 700,
+            fontSize: 14,
+            letterSpacing: "0.5px",
+            textDecoration: "none",
+            boxShadow: "0 8px 30px rgba(212,168,83,0.35)",
+            transition: "transform 0.2s, box-shadow 0.2s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(212,168,83,0.5)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(212,168,83,0.35)"; }}
           >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" strokeLinecap="round" />
-            </svg>
-            Book Your Ride
+            <BsCalendarCheck size={16} /> Book Your Ride
           </a>
           <a
-            href="https://wa.me/919999999999?text=Hi%2C%20I%20want%20to%20book%20a%20ride%20with%20NikloSafar"
-            target="_blank"
-            rel="noreferrer"
-            className="bg-transparent text-[#D4A853] px-8 py-3.5 rounded-lg font-semibold text-sm tracking-wide border border-[#D4A853]/50 hover:border-[#D4A853] hover:bg-[#D4A853]/08 transition-all no-underline flex items-center gap-2"
+            href="https://wa.me/919054270660?text=Hi%2C%20I%20want%20to%20book%20a%20ride%20with%20NikloSafar"
+            target="_blank" rel="noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "transparent",
+              color: "#D4A853",
+              padding: "14px 32px",
+              borderRadius: 10,
+              fontWeight: 600,
+              fontSize: 14,
+              border: "1px solid rgba(212,168,83,0.4)",
+              textDecoration: "none",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = "rgba(212,168,83,0.08)"; e.currentTarget.style.borderColor = "#D4A853"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(212,168,83,0.4)"; }}
           >
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.128.558 4.122 1.528 5.85L0 24l6.336-1.5A11.931 11.931 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.89 0-3.661-.5-5.197-1.375L3 21.5l.9-3.697A9.977 9.977 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
-            </svg>
-            WhatsApp Us
+            <FaWhatsapp size={18} /> WhatsApp Us
           </a>
+        </div>
+
+        {/* Stats row */}
+        <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+          {stats.map((s, i) => (
+            <div key={i}>
+              <div style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: 36,
+                color: "#D4A853",
+                fontWeight: 700,
+                lineHeight: 1,
+              }}>{s.num}</div>
+              <div style={{
+                color: "#8B9BB4",
+                fontSize: 11,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                marginTop: 4,
+              }}>{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="hidden md:flex absolute right-12 bottom-20 gap-10">
-        {[
-          { num: "500+", label: "Happy Trips" },
-          { num: "4.9★", label: "Avg Rating" },
-          { num: "24/7", label: "Available" },
-        ].map((s) => (
-          <div key={s.label} className="text-center">
-            <div className="font-playfair text-4xl text-[#D4A853] font-bold">{s.num}</div>
-            <div className="text-[#8B9BB4] text-xs tracking-widest uppercase mt-1">{s.label}</div>
+      {/* 3D floating card - right side */}
+      <div className="ns-hero-card" style={{
+        position: "absolute",
+        right: "8%",
+        top: "50%",
+        transform: "translateY(-50%) perspective(1000px) rotateY(-8deg) rotateX(3deg)",
+        background: "rgba(20,20,40,0.7)",
+        border: "1px solid rgba(212,168,83,0.2)",
+        borderRadius: 24,
+        padding: "32px 28px",
+        width: 240,
+        backdropFilter: "blur(20px)",
+        boxShadow: "0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(212,168,83,0.08)",
+        animation: "floatCard 5s ease-in-out infinite",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+          <TbStarFilled color="#D4A853" size={18} />
+          <span style={{ color: "#D4A853", fontWeight: 700, fontSize: 14 }}>4.9 Rating</span>
+        </div>
+        {["Airport Drop/Pickup", "Wedding & Functions", "Pilgrimage Tours", "Outstation Trips"].map((s) => (
+          <div key={s} style={{
+            display: "flex", alignItems: "center", gap: 10,
+            padding: "10px 0",
+            borderBottom: "1px solid rgba(212,168,83,0.08)",
+            color: "#8B9BB4",
+            fontSize: 12,
+          }}>
+            <span style={{ width: 6, height: 6, background: "#D4A853", borderRadius: "50%", flexShrink: 0 }} />
+            {s}
           </div>
         ))}
+        <div style={{
+          marginTop: 20,
+          background: "linear-gradient(135deg, #D4A853, #F0C878)",
+          color: "#0A0A1A",
+          padding: "10px",
+          borderRadius: 10,
+          textAlign: "center",
+          fontWeight: 700,
+          fontSize: 12,
+          letterSpacing: "0.5px",
+        }}>✓ 500+ Trips Completed</div>
       </div>
+
+      <style>{`
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes floatCard {
+          0%,100% { transform: translateY(-50%) perspective(1000px) rotateY(-8deg) rotateX(3deg); }
+          50% { transform: translateY(calc(-50% - 14px)) perspective(1000px) rotateY(-8deg) rotateX(3deg); }
+        }
+        @media(max-width:900px) { .ns-hero-card { display: none !important; } }
+      `}</style>
     </section>
   );
 }

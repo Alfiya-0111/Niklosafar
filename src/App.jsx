@@ -1,5 +1,4 @@
 import Navbar from "./components/Navbar";
-import './App.css';
 import Hero from "./components/Hero";
 import Services from "./components/Services";
 import About from "./components/About";
@@ -11,7 +10,7 @@ import Footer from "./components/Footer";
 
 export default function App() {
   return (
-    <div className="font-outfit">
+    <div style={{ fontFamily: "'DM Sans', sans-serif", color: "#F5F0E8", background: "#0A0A1A" }}>
       <Navbar />
       <Hero />
       <Services />
