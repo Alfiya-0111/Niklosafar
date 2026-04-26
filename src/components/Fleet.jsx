@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { BsPersonFill, BsSnow, BsMusicNote } from "react-icons/bs";
 import { MdCleaningServices, Md360 } from "react-icons/md";
 import { TbGps } from "react-icons/tb";
+import ertigaImg from "../assets/ertiga.png";
 
 const specs = [
   { Icon: BsPersonFill, val: "7", key: "Seater" },
@@ -127,7 +128,7 @@ export default function Fleet() {
         {/* Car image */}
         <img
           ref={imgRef}
-          src="/src/assets/ertiga.png"
+          src={ertigaImg}
           alt="Maruti Suzuki Ertiga"
           draggable={false}
           style={{
