@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "niklosafar.com"
+        }
+      ],
+      "destination": "https://www.niklosafar.com/",
+      "permanent": true
+    }
+  ]
+}
