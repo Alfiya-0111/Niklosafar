@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { BsCarFront } from "react-icons/bs";
-
+import logo from "../assets/niklosafar_logo.png"
 const links = ["services", "about", "fleet", "booking", "contact"];
 
 export default function Navbar() {
@@ -41,21 +41,8 @@ export default function Navbar() {
       >
         {/* Logo */}
         <a href="#home" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 10,
-            background: "linear-gradient(135deg, #D4A853, #F0C878)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 0 18px rgba(212,168,83,0.4)",
-          }}>
-            <BsCarFront size={20} color="#0A0A1A" />
-          </div>
-          <span style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: 22,
-            color: "#D4A853",
-            letterSpacing: "0.5px",
-            fontWeight: 700,
-          }}>NikloSafar</span>
+         
+        <img src={logo} alt="Niklosafar_logo" width={150} height={100} />
         </a>
 
         {/* Desktop Links */}
