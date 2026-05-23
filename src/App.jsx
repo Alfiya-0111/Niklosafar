@@ -13,14 +13,15 @@ export default function App() {
   return (
     <>
       <Helmet>
-        <title>NikloSafar – Cab & Tour Service Bilimora, Gujarat | Airport, Wedding, Pilgrimage</title>
-        <meta name="description" content="NikloSafar offers premium cab service from Bilimora, Navsari, South Gujarat. Airport drop/pickup, wedding car, pilgrimage tours to Dwarka & Somnath, outstation trips. Book now – 24/7 available." />
+       <title>NikloSafar Travels Bilimora – Travels Near Me | Cab, Taxi & Tour Service Gujarat</title>
+<meta name="description" content="NikloSafar Travels – best travels near me in Bilimora & Navsari. Airport drop, outstation cab, wedding car & pilgrimage tours. Travels in Bilimora 24/7. Book via WhatsApp +91 9054270660." />
+
         <meta name="keywords" content="cab service Bilimora, taxi Bilimora, cab Navsari, airport drop Surat, Dwarka tour Gujarat, wedding car Bilimora, outstation cab South Gujarat, NikloSafar" />
         <link rel="canonical" href="https://www.niklosafar.com/" />
 
         {/* Open Graph */}
-        <meta property="og:title" content="NikloSafar – Cab & Tour Service Bilimora, Gujarat" />
-        <meta property="og:description" content="Premium cab service for airport drops, weddings, pilgrimages & outstation journeys from Bilimora. Safe, reliable & always on time." />
+       <meta property="og:title" content="NikloSafar Travels Bilimora – Travels Near Me | Cab & Tour Service Gujarat" />
+<meta property="og:description" content="Best travels near you in Bilimora & Navsari. Airport drops, pilgrimage tours & outstation trips. 24/7 available." />
         <meta property="og:url" content="https://www.niklosafar.com/" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://www.niklosafar.com/og-image.jpg" />

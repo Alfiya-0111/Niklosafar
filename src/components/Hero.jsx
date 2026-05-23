@@ -107,35 +107,30 @@ export default function Hero() {
           }} />
         </div>
 
-        <h1 style={{
-          fontFamily: "'Playfair Display', serif",
-          fontSize: "clamp(44px, 7vw, 80px)",
-          color: "#ffffff",
-          lineHeight: 1.1,
-          marginBottom: 24,
-          fontWeight: 700,
-        }}>
-          Travel in{" "}
-          <span style={{
-            background: "linear-gradient(135deg, #D4A853, #F0C878, #D4A853)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}>Comfort</span>
-          {" "}& Style
-        </h1>
+      
+<h1 style={{
+  fontFamily: "'Playfair Display', serif",
+  fontSize: "clamp(44px, 7vw, 80px)",
+  color: "#ffffff",
+  lineHeight: 1.1,
+  marginBottom: 24,
+  fontWeight: 700,
+}}>
+  Travels in{" "}
+  <span style={{
+    background: "linear-gradient(135deg, #D4A853, #F0C878, #D4A853)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+  }}>Bilimora</span>
+  {" "}& Navsari
+</h1>
 
-        <p style={{
-          color: "#8B9BB4",
-          fontSize: 18,
-          lineHeight: 1.75,
-          marginBottom: 40,
-          maxWidth: 520,
-          fontWeight: 300,
-        }}>
-          Premium cab service for airport drops, weddings, pilgrimages &amp;
-          outstation journeys — safe, reliable &amp; always on time.
-        </p>
+       
+<p style={{ color: "#8B9BB4", fontSize: 18, lineHeight: 1.75, marginBottom: 40, maxWidth: 520, fontWeight: 300 }}>
+  NikloSafar — trusted travels near you in South Gujarat. Airport drop/pickup,
+  wedding car, pilgrimage tours to Dwarka & Somnath, outstation cab service. 24/7 available.
+</p>
 
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 64 }}>
           <a href="#booking" style={{
