@@ -1,23 +1,11 @@
 import { useState } from "react";
 import { db } from "../firebase";
 import { ref, push, serverTimestamp } from "firebase/database";
-import { MdCreditCard, MdInfo } from "react-icons/md";
+import { MdSend, MdInfo } from "react-icons/md";
 import { FaWhatsapp } from "react-icons/fa";
 import { BsCheckCircleFill } from "react-icons/bs";
 
 const WHATSAPP_NUMBER = "919054270660"; // Admin number
-const RAZORPAY_KEY_ID = "rzp_test_ShJjqbkRwxYj4j";
-
-function loadRazorpayScript() {
-  return new Promise((resolve) => {
-    if (window.Razorpay) return resolve(true);
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
 
 function generateBookingId() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -81,89 +69,47 @@ export default function Booking() {
     const err = validateForm();
     if (err) { setError(err); return; }
     setLoading(true);
-    const ok = await loadRazorpayScript();
-    if (!ok) {
-      setError("Failed to load payment gateway.");
-      setLoading(false);
-      return;
-    }
-    initiatePayment();
-  };
 
-  const initiatePayment = () => {
     const newBookingId = generateBookingId();
     setBookingId(newBookingId);
     const capturedForm = { ...form };
 
-    const options = {
-      key: RAZORPAY_KEY_ID,
-      amount: 50000,
-      currency: "INR",
-      name: "NikloSafar",
-      description: `Booking Advance — ${capturedForm.service}`,
-      prefill: { name: capturedForm.name, contact: capturedForm.phone },
-      notes: {
-        booking_id: newBookingId,
-        route: capturedForm.route,
-        service: capturedForm.service,
-        travel_date: capturedForm.date,
-      },
-      theme: { color: "#D4A853" },
-      modal: {
-        ondismiss: () => {
-          setLoading(false);
-          setStep("form");
-          setError("Payment cancelled. Please try again.");
-        },
-      },
-      handler: async (response) => {
-        await saveBookingToFirebase(newBookingId, response, capturedForm);
-      },
-    };
-
-    setStep("paying");
-    const razorpay = new window.Razorpay(options);
-    razorpay.on("payment.failed", (response) => {
-      setLoading(false);
-      setStep("form");
-      setError(`Payment failed: ${response.error.description}`);
-    });
-    razorpay.open();
-    setLoading(false);
-  };
-
-  const saveBookingToFirebase = async (bId, paymentResponse, capturedForm) => {
     try {
       await push(ref(db, "bookings"), {
-        bookingId: bId,
+        bookingId: newBookingId,
         ...capturedForm,
         time: capturedForm.time || "Not specified",
         message: capturedForm.message || "",
-        advancePaid: 500,
-        paymentId: paymentResponse.razorpay_payment_id,
-        paymentOrderId: paymentResponse.razorpay_order_id || "",
-        paymentSignature: paymentResponse.razorpay_signature || "",
+        advancePaid: 0,
+        paymentId: null,
+        paymentOrderId: null,
+        paymentSignature: null,
         status: "confirmed",
         createdAt: serverTimestamp(),
       });
     } catch (err) {
       console.error("Firebase error:", err);
+      setError("Booking save failed. Please try again.");
+      setLoading(false);
+      return;
     }
 
-    setBookingDetails({ ...capturedForm, paymentId: paymentResponse.razorpay_payment_id });
+    setBookingDetails({ ...capturedForm });
     setStep("success");
 
-    // 1. Admin ko WhatsApp notification
-    sendAdminWhatsApp(bId, paymentResponse.razorpay_payment_id, capturedForm);
+    // Admin ko WhatsApp notification
+    sendAdminWhatsApp(newBookingId, capturedForm);
 
-    // 2. Customer ko WhatsApp confirmation (1 second baad)
+    // Customer ko WhatsApp confirmation (1 second baad)
     setTimeout(() => {
-      sendCustomerWhatsApp(bId, capturedForm);
+      sendCustomerWhatsApp(newBookingId, capturedForm);
     }, 1000);
+
+    setLoading(false);
   };
 
   // Admin notification
-  const sendAdminWhatsApp = (bId, paymentId, f) => {
+  const sendAdminWhatsApp = (bId, f) => {
     const timeStr = f.time ? `%0A⏰ Pickup Time: ${f.time}` : "";
     const msgStr = f.message ? `%0A📝 Note: ${encodeURIComponent(f.message)}` : "";
 
@@ -179,8 +125,7 @@ export default function Booking() {
       `🛣️ Route: ${encodeURIComponent(f.route)}%0A` +
       `🚘 Service: ${encodeURIComponent(f.service)}` +
       `${msgStr}%0A%0A` +
-      `💰 Advance Paid: ₹500%0A` +
-      `🔖 Payment ID: ${paymentId}%0A%0A` +
+      `💰 Advance Paid: ₹0 (Free Booking)%0A%0A` +
       `✅ Please confirm this booking with the customer.`;
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank");
@@ -207,7 +152,7 @@ export default function Booking() {
       `🛣️ Route: ${encodeURIComponent(f.route)}%0A` +
       `🚘 Service: ${encodeURIComponent(f.service)}` +
       `${msgStr}%0A%0A` +
-      `💰 Advance Paid: ₹500%0A%0A` +
+      `💰 Advance Paid: ₹0%0A%0A` +
       `Koi sawaal ho toh hume is number pe WhatsApp karein.%0A` +
       `Dhanyawad for choosing NikloSafar! 🚗✨`;
 
@@ -267,15 +212,15 @@ export default function Booking() {
         </h2>
         <div style={{ width: 56, height: 3, background: "linear-gradient(90deg, #D4A853, #F0C878)", borderRadius: 2, marginBottom: 16 }} />
         <p style={{ color: "#8B9BB4", fontSize: 15, maxWidth: 480, lineHeight: 1.7 }}>
-          Fill the form and pay ₹500 advance to confirm your booking. Balance payable on ride day.
+          Fill the form to confirm your booking instantly. No advance payment required.
         </p>
       </div>
 
-      {/* Advance notice */}
+      {/* Free booking notice */}
       <div style={{
         marginBottom: 40,
-        background: "rgba(212,168,83,0.06)",
-        border: "1px solid rgba(212,168,83,0.2)",
+        background: "rgba(34,197,94,0.06)",
+        border: "1px solid rgba(34,197,94,0.2)",
         borderRadius: 14,
         padding: "16px 20px",
         display: "flex",
@@ -283,11 +228,11 @@ export default function Booking() {
         gap: 12,
         maxWidth: 640,
       }}>
-        <MdInfo size={20} color="#D4A853" style={{ marginTop: 1, flexShrink: 0 }} />
+        <MdInfo size={20} color="#22c55e" style={{ marginTop: 1, flexShrink: 0 }} />
         <div>
-          <p style={{ color: "#D4A853", fontSize: 14, fontWeight: 600, marginBottom: 4 }}>₹500 Advance Required</p>
+          <p style={{ color: "#22c55e", fontSize: 14, fontWeight: 600, marginBottom: 4 }}>100% Free Booking</p>
           <p style={{ color: "#8B9BB4", fontSize: 13, lineHeight: 1.6 }}>
-            A refundable advance of ₹500 is collected to confirm your booking and avoid no-shows. Remaining fare is paid on the day of travel.
+            No advance payment required. Book your ride now and pay on the day of travel. Instant confirmation via WhatsApp.
           </p>
         </div>
       </div>
@@ -307,7 +252,7 @@ export default function Booking() {
                 Book via Form
               </h3>
               <p style={{ color: "#8B9BB4", fontSize: 12, marginBottom: 28 }}>
-                Pay ₹500 advance online · Instant confirmation
+                Free booking · Instant confirmation · Pay on ride day
               </p>
 
               {error && (
@@ -388,25 +333,6 @@ export default function Booking() {
                   />
                 </div>
 
-                <div style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(212,168,83,0.08)",
-                  borderRadius: 10,
-                  padding: "12px 16px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}>
-                  <span style={{ color: "#8B9BB4", fontSize: 13 }}>Advance to pay now</span>
-                  <span style={{
-                    fontSize: 20, fontWeight: 700,
-                    background: "linear-gradient(135deg, #D4A853, #F0C878)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                  }}>₹500</span>
-                </div>
-
                 <button type="submit" disabled={loading} style={{
                   width: "100%",
                   background: "linear-gradient(135deg, #D4A853, #F0C878)",
@@ -429,11 +355,11 @@ export default function Booking() {
                   onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 35px rgba(212,168,83,0.45)"; } }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 25px rgba(212,168,83,0.3)"; }}
                 >
-                  {loading ? "Loading Payment..." : (<><MdCreditCard size={18} /> Pay ₹500 &amp; Confirm Booking</>)}
+                  {loading ? "Processing..." : (<><MdSend size={18} /> Confirm Booking</>)}
                 </button>
 
                 <p style={{ textAlign: "center", color: "#8B9BB4", fontSize: 12 }}>
-                  Secured by Razorpay · UPI, Cards, NetBanking accepted
+                  No payment required · Pay on ride day
                 </p>
               </form>
             </>
@@ -482,7 +408,7 @@ export default function Booking() {
                     { label: "Route", value: bookingDetails.route },
                     { label: "Service", value: bookingDetails.service },
                     { label: "Date", value: bookingDetails.date },
-                    { label: "Advance Paid", value: "₹500 ✅" },
+                    { label: "Payment", value: "Pay on ride day" },
                   ].map(({ label, value }) => (
                     <div key={label} style={{
                       display: "flex",
@@ -563,7 +489,7 @@ export default function Booking() {
             Book via WhatsApp
           </h3>
           <p style={{ color: "#8B9BB4", fontSize: 14, lineHeight: 1.7, maxWidth: 280 }}>
-            Prefer chatting? Message us directly on WhatsApp. We'll share payment link and confirm your ride instantly. Available 24/7.
+            Prefer chatting? Message us directly on WhatsApp. We'll confirm your ride instantly. Available 24/7.
           </p>
 
           <div style={{
@@ -579,8 +505,8 @@ export default function Booking() {
             </p>
             {[
               "Send us your ride details on WhatsApp",
-              "We'll share a Razorpay payment link for ₹500",
-              "Pay advance · Booking confirmed instantly",
+              "We'll confirm your booking instantly",
+              "Pay on the day of your ride",
             ].map((s, i) => (
               <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 12 }}>
                 <span style={{
@@ -591,7 +517,7 @@ export default function Booking() {
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0,
                 }}>{i + 1}</span>
-                <p style={{ color: "#8B9BB4", fontSize: 13, lineHeight: 1.5 }}>{s}</p>
+                <p style={{ color: "#8B9BB4", fontSize: 13, lineLine: 1.5 }}>{s}</p>
               </div>
             ))}
           </div>
