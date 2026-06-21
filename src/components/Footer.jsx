@@ -1,177 +1,56 @@
-import { BsCarFront } from "react-icons/bs";
+import { TbRoute } from "react-icons/tb";
 import { FaWhatsapp, FaInstagram, FaFacebook } from "react-icons/fa";
 import { MdEmail, MdPhone } from "react-icons/md";
 
-const quickLinks = ["services", "about", "fleet", "booking", "contact"];
-const services = ["Airport Drop/Pickup", "Wedding & Functions", "Pilgrimage Tours", "Outstation Trips"];
-
 export default function Footer() {
   return (
-    <footer style={{
-      background: "#050510",
-      padding: "72px 48px 32px",
-      borderTop: "1px solid rgba(212,168,83,0.12)",
-      position: "relative",
-    }}>
-      {/* Top gold line */}
-      <div style={{
-        position: "absolute",
-        top: 0, left: 0, right: 0, height: 1,
-        background: "linear-gradient(90deg, transparent, #D4A853, transparent)",
-      }} />
-
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1.4fr 1fr 1fr 1fr",
-        gap: 48,
-        marginBottom: 56,
-      }} className="ns-footer-grid">
-        {/* Brand */}
+    <footer style={{ background: "#0F1222", padding: "64px 48px 28px", borderTop: "1px solid rgba(94,212,196,0.12)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr", gap: 48, marginBottom: 48 }} className="cc-footer-grid">
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-            <div style={{
-              width: 38, height: 38,
-              background: "linear-gradient(135deg, #D4A853, #F0C878)",
-              borderRadius: 10,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 0 16px rgba(212,168,83,0.35)",
-            }}>
-              <BsCarFront size={20} color="#0A0A1A" />
+            <div style={{ width: 34, height: 34, borderRadius: 9, background: "linear-gradient(135deg, #FF8B5E, #FF6B35)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <TbRoute size={17} color="#14182B" />
             </div>
-            <span style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: 22,
-              color: "#D4A853",
-              fontWeight: 700,
-            }}>NikloSafar</span>
+            <span style={{ fontFamily: "'Fraunces', serif", fontSize: 19, color: "#F5F3ED", fontWeight: 600 }}>ConnectCab</span>
           </div>
-          <p style={{
-            color: "#8B9BB4",
-            fontSize: 14,
-            lineHeight: 1.7,
-            marginBottom: 24,
-            maxWidth: 220,
-          }}>
-            Premium cab service based in Bilimora, serving South Gujarat with comfort &amp; reliability.
+          <p style={{ color: "#9CA3C4", fontSize: 13.5, lineHeight: 1.7, maxWidth: 260, marginBottom: 20 }}>
+            South Gujarat ka local cab network — destination dalo, available cars dekho, seedha book karo.
           </p>
-          {/* Social */}
-          <div style={{ display: "flex", gap: 12 }}>
-            {[
-              { Icon: FaWhatsapp, href: "https://wa.me/919054270660", color: "#22c55e" },
-              { Icon: FaInstagram, href: "#", color: "#E8607A" },
-              { Icon: FaFacebook, href: "#", color: "#4F8EF7" },
-            ].map(({ Icon, href, color }, i) => (
-              <a key={i} href={href} target="_blank" rel="noreferrer" style={{
-                width: 38, height: 38,
-                background: `${color}12`,
-                border: `1px solid ${color}25`,
-                borderRadius: 10,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                textDecoration: "none",
-                transition: "transform 0.2s, background 0.2s",
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = `${color}22`; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = `${color}12`; e.currentTarget.style.transform = "translateY(0)"; }}
-              >
-                <Icon size={17} color={color} />
+          <div style={{ display: "flex", gap: 10 }}>
+            {[{ Icon: FaWhatsapp, color: "#25D366", href: "https://wa.me/919054270660" }, { Icon: FaInstagram, color: "#E8607A", href: "#" }, { Icon: FaFacebook, color: "#4F8EF7", href: "#" }].map(({ Icon, color, href }, i) => (
+              <a key={i} href={href} target="_blank" rel="noreferrer" style={{ width: 36, height: 36, background: `${color}12`, border: `1px solid ${color}25`, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Icon size={15} color={color} />
               </a>
             ))}
           </div>
         </div>
 
-        {/* Quick Links */}
         <div>
-          <h4 style={{ color: "#D4A853", fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 20 }}>
-            Quick Links
-          </h4>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {quickLinks.map((l) => (
-              <a key={l} href={`#${l}`} style={{
-                color: "#8B9BB4", fontSize: 14, textDecoration: "none",
-                textTransform: "capitalize", transition: "color 0.2s",
-              }}
-                onMouseEnter={e => e.target.style.color = "#D4A853"}
-                onMouseLeave={e => e.target.style.color = "#8B9BB4"}
-              >{l}</a>
-            ))}
-          </div>
+          <h4 style={{ color: "#5ED4C4", fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 18 }}>For Riders</h4>
+          {["Find a Cab", "How it Works"].map((l) => (
+            <a key={l} href="/#home" style={{ display: "block", color: "#9CA3C4", fontSize: 13.5, textDecoration: "none", marginBottom: 12 }}>{l}</a>
+          ))}
         </div>
 
-        {/* Services */}
         <div>
-          <h4 style={{ color: "#D4A853", fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 20 }}>
-            Services
-          </h4>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {services.map((s) => (
-              <a key={s} href="#booking" style={{
-                color: "#8B9BB4", fontSize: 14, textDecoration: "none", transition: "color 0.2s",
-              }}
-                onMouseEnter={e => e.target.style.color = "#D4A853"}
-                onMouseLeave={e => e.target.style.color = "#8B9BB4"}
-              >{s}</a>
-            ))}
-          </div>
-        </div>
-
-        {/* Contact quick */}
-        <div>
-          <h4 style={{ color: "#D4A853", fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 20 }}>
-            Contact
-          </h4>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <a href="tel:+919054270660" style={{
-              display: "flex", alignItems: "center", gap: 8,
-              color: "#8B9BB4", fontSize: 14, textDecoration: "none", transition: "color 0.2s",
-            }}
-              onMouseEnter={e => e.currentTarget.style.color = "#D4A853"}
-              onMouseLeave={e => e.currentTarget.style.color = "#8B9BB4"}
-            >
-              <MdPhone size={15} color="#D4A853" /> +91 9054270660
-            </a>
-            <a href="mailto:info@niklosafar.com" style={{
-              display: "flex", alignItems: "center", gap: 8,
-              color: "#8B9BB4", fontSize: 14, textDecoration: "none", transition: "color 0.2s",
-            }}
-              onMouseEnter={e => e.currentTarget.style.color = "#D4A853"}
-              onMouseLeave={e => e.currentTarget.style.color = "#8B9BB4"}
-            >
-              <MdEmail size={15} color="#D4A853" /> info@niklosafar.com
-            </a>
-            <p style={{ color: "#8B9BB4", fontSize: 13, lineHeight: 1.5 }}>
-              Bilimora, Navsari District<br />South Gujarat, India
-            </p>
-          </div>
+          <h4 style={{ color: "#5ED4C4", fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 18 }}>Contact</h4>
+          <a href="tel:+919054270660" style={{ display: "flex", alignItems: "center", gap: 8, color: "#9CA3C4", fontSize: 13.5, textDecoration: "none", marginBottom: 12 }}>
+            <MdPhone size={14} color="#FF8B5E" /> +91 90542 70660
+          </a>
+          <a href="mailto:hello@connectcab.in" style={{ display: "flex", alignItems: "center", gap: 8, color: "#9CA3C4", fontSize: 13.5, textDecoration: "none" }}>
+            <MdEmail size={14} color="#FF8B5E" /> hello@connectcab.in
+          </a>
         </div>
       </div>
 
-      {/* Bottom bar */}
-      <div style={{
-        borderTop: "1px solid rgba(255,255,255,0.06)",
-        paddingTop: 24,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: 12,
-      }}>
-        <p style={{ color: "#8B9BB4", fontSize: 13 }}>
-          &copy; {new Date().getFullYear()}{" "}
-          <span style={{ color: "#D4A853" }}>NikloSafar</span>. All rights reserved.
-        </p>
-        <p style={{ color: "#8B9BB4", fontSize: 13 }}>
-          Made with ♥ in{" "}
-          <span style={{ color: "#D4A853" }}>Bilimora, Gujarat</span>
-        </p>
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 20, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+        <p style={{ color: "#9CA3C4", fontSize: 12.5 }}>&copy; {new Date().getFullYear()} ConnectCab. All rights reserved.</p>
+        <p style={{ color: "#9CA3C4", fontSize: 12.5 }}>Made in Bilimora, Gujarat</p>
       </div>
 
       <style>{`
-        @media(max-width:900px) {
-          .ns-footer-grid { grid-template-columns: 1fr 1fr !important; }
-        }
-        @media(max-width:540px) {
-          .ns-footer-grid { grid-template-columns: 1fr !important; }
-        }
+        @media(max-width:860px) { .cc-footer-grid { grid-template-columns: 1fr 1fr !important; } }
+        @media(max-width:520px) { .cc-footer-grid { grid-template-columns: 1fr !important; } }
       `}</style>
     </footer>
   );

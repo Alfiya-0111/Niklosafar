@@ -1,256 +1,143 @@
-import { useEffect, useRef } from "react";
-import { BsCalendarCheck } from "react-icons/bs";
-import { FaWhatsapp } from "react-icons/fa";
-import { TbStarFilled } from "react-icons/tb";
-import { MdVerified } from "react-icons/md";
+import { useState } from "react";
+import { MdLocationOn, MdSearch } from "react-icons/md";
+import { TbRoute } from "react-icons/tb";
+import { popularDestinations } from "../data/constants";
 
-const stats = [
-  { num: "500+", label: "Happy Trips" },
-  { num: "4.9★", label: "Avg Rating" },
-  { num: "24/7", label: "Available" },
-];
+export default function Hero({ onSearch }) {
+  const [destination, setDestination] = useState("");
 
-export default function Hero() {
-  const canvasRef = useRef(null);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!destination.trim()) return;
+    onSearch(destination.trim());
+  };
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles = Array.from({ length: 60 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.5 + 0.3,
-      dx: (Math.random() - 0.5) * 0.3,
-      dy: (Math.random() - 0.5) * 0.3,
-      alpha: Math.random() * 0.5 + 0.1,
-    }));
-
-    let raf;
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(212,168,83,${p.alpha})`;
-        ctx.fill();
-      });
-      raf = requestAnimationFrame(animate);
-    };
-    animate();
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  const handleChipClick = (d) => {
+    setDestination(d);
+    onSearch(d);
+  };
 
   return (
     <section id="home" style={{
-      minHeight: "100vh",
-      background: "linear-gradient(135deg, #0A0A1A 0%, #141428 50%, #0f0f22 100%)",
+      minHeight: "92vh",
+      background: "linear-gradient(160deg, #14182B 0%, #1D2240 55%, #181C32 100%)",
       display: "flex",
       alignItems: "center",
-      padding: "72px 48px 0",
+      padding: "110px 48px 64px",
       position: "relative",
       overflow: "hidden",
     }}>
-      {/* Particle canvas */}
-      <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
-
-      {/* Gold radial glow */}
       <div style={{
-        position: "absolute",
-        top: "20%",
-        left: "30%",
-        width: 600,
-        height: 600,
-        background: "radial-gradient(circle, rgba(212,168,83,0.08) 0%, transparent 65%)",
-        transform: "translate(-50%,-50%)",
-        pointerEvents: "none",
+        position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.5,
+        backgroundImage: "linear-gradient(rgba(94,212,196,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(94,212,196,0.04) 1px, transparent 1px)",
+        backgroundSize: "56px 56px",
       }} />
+      <div style={{ position: "absolute", top: "10%", right: "8%", width: 480, height: 480, background: "radial-gradient(circle, rgba(255,139,94,0.08) 0%, transparent 65%)", pointerEvents: "none" }} />
 
-      {/* Grid lines */}
-      <div style={{
-        position: "absolute", inset: 0, pointerEvents: "none",
-        backgroundImage: "linear-gradient(rgba(212,168,83,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(212,168,83,0.03) 1px, transparent 1px)",
-        backgroundSize: "60px 60px",
-      }} />
-
-      <div style={{ position: "relative", zIndex: 2, maxWidth: 680 }}>
-        {/* Badge */}
+      <div style={{ position: "relative", zIndex: 2, maxWidth: 720, margin: "0 auto", width: "100%" }}>
         <div style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 8,
-          background: "rgba(212,168,83,0.08)",
-          border: "1px solid rgba(212,168,83,0.3)",
-          color: "#D4A853",
-          padding: "8px 18px",
-          borderRadius: 40,
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: "2.5px",
-          textTransform: "uppercase",
-          marginBottom: 32,
+          display: "inline-flex", alignItems: "center", gap: 8,
+          background: "rgba(94,212,196,0.08)", border: "1px solid rgba(94,212,196,0.3)",
+          color: "#5ED4C4", padding: "8px 18px", borderRadius: 40,
+          fontSize: 11, fontWeight: 700, letterSpacing: "2.5px", textTransform: "uppercase",
+          marginBottom: 28,
         }}>
-          <MdVerified size={14} />
-          Based in Bilimora, Gujarat
+          <TbRoute size={14} /> South Gujarat's Local Cab Network
+        </div>
+
+        <h1 style={{
+          fontFamily: "'Fraunces', serif",
+          fontSize: "clamp(38px, 6vw, 64px)",
+          color: "#F5F3ED",
+          lineHeight: 1.12,
+          marginBottom: 20,
+          fontWeight: 600,
+          textAlign: "center",
+        }}>
+          Tell us where you're going.{" "}
           <span style={{
-            width: 6, height: 6,
-            background: "#22c55e",
-            borderRadius: "50%",
-            animation: "pulse 2s infinite",
-          }} />
-        </div>
+            background: "linear-gradient(135deg, #FF8B5E, #FFB088)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+          }}>We'll show you who's driving there.</span>
+        </h1>
 
-      
-<h1 style={{
-  fontFamily: "'Playfair Display', serif",
-  fontSize: "clamp(44px, 7vw, 80px)",
-  color: "#ffffff",
-  lineHeight: 1.1,
-  marginBottom: 24,
-  fontWeight: 700,
-}}>
-  Travels in{" "}
-  <span style={{
-    background: "linear-gradient(135deg, #D4A853, #F0C878, #D4A853)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-  }}>Bilimora</span>
-  {" "}& Navsari
-</h1>
+        <p style={{ color: "#9CA3C4", fontSize: 16, textAlign: "center", maxWidth: 480, margin: "0 auto 40px", lineHeight: 1.7 }}>
+          Verified local cab owners across Bilimora, Navsari & Surat — compare fuel type and price before you book.
+        </p>
 
-       
-<p style={{ color: "#8B9BB4", fontSize: 18, lineHeight: 1.75, marginBottom: 40, maxWidth: 520, fontWeight: 300 }}>
-  NikloSafar — trusted travels near you in South Gujarat. Airport drop/pickup,
-  wedding car, pilgrimage tours to Dwarka & Somnath, outstation cab service. 24/7 available.
-</p>
-
-        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 64 }}>
-          <a href="#booking" style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            background: "linear-gradient(135deg, #D4A853, #F0C878)",
-            color: "#0A0A1A",
-            padding: "14px 32px",
-            borderRadius: 10,
-            fontWeight: 700,
-            fontSize: 14,
-            letterSpacing: "0.5px",
-            textDecoration: "none",
-            boxShadow: "0 8px 30px rgba(212,168,83,0.35)",
-            transition: "transform 0.2s, box-shadow 0.2s",
+        <form onSubmit={handleSubmit} style={{
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 18,
+          padding: 10,
+          display: "flex",
+          gap: 10,
+          backdropFilter: "blur(20px)",
+          boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
+        }} className="cc-search-form">
+          <div style={{
+            flex: 1, display: "flex", alignItems: "center", gap: 10,
+            background: "rgba(0,0,0,0.2)", borderRadius: 12, padding: "0 16px",
+          }}>
+            <MdLocationOn size={20} color="#FF8B5E" />
+            <input
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              placeholder="Where do you want to go? e.g. Dwarka, Surat..."
+              style={{
+                flex: 1, background: "transparent", border: "none", outline: "none",
+                color: "#F5F3ED", fontSize: 15, padding: "16px 0", fontFamily: "inherit",
+              }}
+            />
+          </div>
+          <button type="submit" style={{
+            display: "flex", alignItems: "center", gap: 8,
+            background: "linear-gradient(135deg, #FF8B5E, #FF6B35)",
+            color: "#14182B", border: "none", borderRadius: 12,
+            padding: "0 26px", fontWeight: 700, fontSize: 14, cursor: "pointer",
+            boxShadow: "0 8px 24px rgba(255,139,94,0.35)",
+            transition: "transform 0.2s",
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(212,168,83,0.5)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(212,168,83,0.35)"; }}
+            onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+            onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
           >
-            <BsCalendarCheck size={16} /> Book Your Ride
-          </a>
-          <a
-            href="https://wa.me/919054270660?text=Hi%2C%20I%20want%20to%20book%20a%20ride%20with%20NikloSafar"
-            target="_blank" rel="noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              background: "transparent",
-              color: "#D4A853",
-              padding: "14px 32px",
-              borderRadius: 10,
-              fontWeight: 600,
-              fontSize: 14,
-              border: "1px solid rgba(212,168,83,0.4)",
-              textDecoration: "none",
-              transition: "all 0.2s",
+            <MdSearch size={18} /> Search Cabs
+          </button>
+        </form>
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginTop: 24 }}>
+          <span style={{ color: "#9CA3C4", fontSize: 12, marginRight: 4, alignSelf: "center" }}>Popular:</span>
+          {popularDestinations.map((d) => (
+            <button key={d} onClick={() => handleChipClick(d)} type="button" style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              color: "#F5F3ED", fontSize: 12.5, padding: "7px 16px", borderRadius: 40,
+              cursor: "pointer", transition: "all 0.2s",
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = "rgba(212,168,83,0.08)"; e.currentTarget.style.borderColor = "#D4A853"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(212,168,83,0.4)"; }}
-          >
-            <FaWhatsapp size={18} /> WhatsApp Us
-          </a>
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#5ED4C4"; e.currentTarget.style.color = "#5ED4C4"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "#F5F3ED"; }}
+            >{d}</button>
+          ))}
         </div>
 
-        {/* Stats row */}
-        <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
-          {stats.map((s, i) => (
-            <div key={i}>
-              <div style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 36,
-                color: "#D4A853",
-                fontWeight: 700,
-                lineHeight: 1,
-              }}>{s.num}</div>
-              <div style={{
-                color: "#8B9BB4",
-                fontSize: 11,
-                letterSpacing: "2px",
-                textTransform: "uppercase",
-                marginTop: 4,
-              }}>{s.label}</div>
+        <div style={{ display: "flex", justifyContent: "center", gap: 48, marginTop: 64, flexWrap: "wrap" }}>
+          {[
+            { num: "40+", label: "Verified Cars" },
+            { num: "12", label: "Destinations" },
+            { num: "4.7★", label: "Avg Rating" },
+          ].map((s) => (
+            <div key={s.label} style={{ textAlign: "center" }}>
+              <div style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#FF8B5E", fontWeight: 600 }}>{s.num}</div>
+              <div style={{ color: "#9CA3C4", fontSize: 11, letterSpacing: "1.5px", textTransform: "uppercase", marginTop: 4 }}>{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 3D floating card - right side */}
-      <div className="ns-hero-card" style={{
-        position: "absolute",
-        right: "8%",
-        top: "50%",
-        transform: "translateY(-50%) perspective(1000px) rotateY(-8deg) rotateX(3deg)",
-        background: "rgba(20,20,40,0.7)",
-        border: "1px solid rgba(212,168,83,0.2)",
-        borderRadius: 24,
-        padding: "32px 28px",
-        width: 240,
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(212,168,83,0.08)",
-        animation: "floatCard 5s ease-in-out infinite",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <TbStarFilled color="#D4A853" size={18} />
-          <span style={{ color: "#D4A853", fontWeight: 700, fontSize: 14 }}>4.9 Rating</span>
-        </div>
-        {["Airport Drop/Pickup", "Wedding & Functions", "Pilgrimage Tours", "Outstation Trips"].map((s) => (
-          <div key={s} style={{
-            display: "flex", alignItems: "center", gap: 10,
-            padding: "10px 0",
-            borderBottom: "1px solid rgba(212,168,83,0.08)",
-            color: "#8B9BB4",
-            fontSize: 12,
-          }}>
-            <span style={{ width: 6, height: 6, background: "#D4A853", borderRadius: "50%", flexShrink: 0 }} />
-            {s}
-          </div>
-        ))}
-        <div style={{
-          marginTop: 20,
-          background: "linear-gradient(135deg, #D4A853, #F0C878)",
-          color: "#0A0A1A",
-          padding: "10px",
-          borderRadius: 10,
-          textAlign: "center",
-          fontWeight: 700,
-          fontSize: 12,
-          letterSpacing: "0.5px",
-        }}>✓ 500+ Trips Completed</div>
-      </div>
-
       <style>{`
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        @keyframes floatCard {
-          0%,100% { transform: translateY(-50%) perspective(1000px) rotateY(-8deg) rotateX(3deg); }
-          50% { transform: translateY(calc(-50% - 14px)) perspective(1000px) rotateY(-8deg) rotateX(3deg); }
+        @media(max-width: 640px) {
+          .cc-search-form { flex-direction: column; }
         }
-        @media(max-width:900px) { .ns-hero-card { display: none !important; } }
       `}</style>
     </section>
   );
