@@ -1,16 +1,15 @@
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, push, set, serverTimestamp } from "firebase/database";
 import { db } from "./config";
 
-const bookingsCollection = collection(db, "bookings");
-
 /**
- * Saves a booking to Firestore. Call this once the rider has paid the
- * advance (or chosen to pay later), so every booking — paid or not — is
- * recorded and visible to the admin.
+ * Saves a booking to Realtime Database.
  */
 export async function createBooking(bookingData) {
-  return addDoc(bookingsCollection, {
+  const bookingsRef = ref(db, "bookings");
+  const newBookingRef = push(bookingsRef);
+  await set(newBookingRef, {
     ...bookingData,
     createdAt: serverTimestamp(),
   });
+  return newBookingRef.key;
 }

@@ -1,10 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import SearchResultsPage from "./pages/SearchResultsPage";
 import Checkout from "./pages/Checkout";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
-import ProtectedRoute from "./components/admin/ProtectedRoute";
 
 export default function App() {
   return (
@@ -17,16 +15,8 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/results" element={<SearchResultsPage />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
       </Routes>
     </>
   );

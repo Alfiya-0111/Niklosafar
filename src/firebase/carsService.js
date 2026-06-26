@@ -1,48 +1,41 @@
-import {
-  collection,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { ref, onValue, push, set, update, remove } from "firebase/database";
 import { db } from "./config";
 
-const carsCollection = collection(db, "cars");
-
-/**
- * Subscribes to live updates of all cars. Calls `callback` with the full
- * array every time anything changes in Firestore (e.g. admin adds a car).
- * Returns an unsubscribe function — call it on component unmount.
- */
-export function subscribeToCars(callback, onError) {
-  return onSnapshot(
-    carsCollection,
-    (snapshot) => {
-      const cars = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-      callback(cars);
-    },
-    (error) => {
-      console.error("Error listening to cars:", error);
-      if (onError) onError(error);
+export const subscribeToCars = (onSuccess, onError) => {
+  const carsRef = ref(db, "cars");
+  const unsubscribe = onValue(carsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const carsArray = Object.entries(data).map(([id, car]) => ({ id, ...car }));
+      onSuccess(carsArray);
+    } else {
+      onSuccess([]);
     }
-  );
-}
-
-export async function addCar(carData) {
-  return addDoc(carsCollection, {
-    ...carData,
-    createdAt: serverTimestamp(),
+  }, (error) => {
+    if (onError) onError(error);
   });
-}
+  return unsubscribe;
+};
 
-export async function updateCar(carId, carData) {
-  const carRef = doc(db, "cars", carId);
-  return updateDoc(carRef, carData);
-}
+export const addCar = async (carData) => {
+  const carsRef = ref(db, "cars");
+  const newCarRef = push(carsRef);
+  await set(newCarRef, {
+    ...carData,
+    createdAt: Date.now(),
+  });
+  return newCarRef.key;
+};
 
-export async function deleteCar(carId) {
-  const carRef = doc(db, "cars", carId);
-  return deleteDoc(carRef);
-}
+export const updateCar = async (carId, carData) => {
+  const carRef = ref(db, `cars/${carId}`);
+  await update(carRef, {
+    ...carData,
+    updatedAt: Date.now(),
+  });
+};
+
+export const deleteCar = async (carId) => {
+  const carRef = ref(db, `cars/${carId}`);
+  await remove(carRef);
+};

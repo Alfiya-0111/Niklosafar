@@ -1,142 +1,281 @@
 import { useState } from "react";
-import { MdLocationOn, MdSearch } from "react-icons/md";
-import { TbRoute } from "react-icons/tb";
+import { MdLocationOn, MdSearch, MdSwapHoriz, MdDateRange, MdAccessTime } from "react-icons/md";
 import { popularDestinations } from "../data/constants";
 
+const tabs = ["ONE WAY", "ROUND TRIP", "LOCAL", "AIRPORT"];
+
 export default function Hero({ onSearch }) {
-  const [destination, setDestination] = useState("");
+  const [activeTab, setActiveTab] = useState("ONE WAY");
+  const [from, setFrom] = useState("Bilimora, Gujarat");
+  const [to, setTo] = useState("");
+  const [pickupDate, setPickupDate] = useState(new Date().toISOString().split('T')[0]);
+  const [pickupTime, setPickupTime] = useState("07:00");
+  const [returnDate, setReturnDate] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!destination.trim()) return;
-    onSearch(destination.trim());
+    if (!to.trim()) return;
+    onSearch(to.trim());
   };
 
   const handleChipClick = (d) => {
-    setDestination(d);
+    setTo(d);
     onSearch(d);
   };
 
+  const showReturnDate = activeTab === "ROUND TRIP";
+
   return (
     <section id="home" style={{
-      minHeight: "92vh",
-      background: "linear-gradient(160deg, #14182B 0%, #1D2240 55%, #181C32 100%)",
+      minHeight: "100vh",
+      background: "linear-gradient(160deg, #1a1f3c 0%, #2d3561 50%, #1a1f3c 100%)",
       display: "flex",
       alignItems: "center",
-      padding: "110px 48px 64px",
+      justifyContent: "center",
+      padding: "100px 24px 60px",
       position: "relative",
       overflow: "hidden",
     }}>
+      {/* Background overlay */}
       <div style={{
-        position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.5,
-        backgroundImage: "linear-gradient(rgba(94,212,196,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(94,212,196,0.04) 1px, transparent 1px)",
-        backgroundSize: "56px 56px",
+        position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.3,
+        backgroundImage: "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+        backgroundSize: "60px 60px",
       }} />
-      <div style={{ position: "absolute", top: "10%", right: "8%", width: 480, height: 480, background: "radial-gradient(circle, rgba(255,139,94,0.08) 0%, transparent 65%)", pointerEvents: "none" }} />
 
-      <div style={{ position: "relative", zIndex: 2, maxWidth: 720, margin: "0 auto", width: "100%" }}>
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          background: "rgba(94,212,196,0.08)", border: "1px solid rgba(94,212,196,0.3)",
-          color: "#5ED4C4", padding: "8px 18px", borderRadius: 40,
-          fontSize: 11, fontWeight: 700, letterSpacing: "2.5px", textTransform: "uppercase",
-          marginBottom: 28,
-        }}>
-          <TbRoute size={14} /> South Gujarat's Local Cab Network
-        </div>
-
+      <div style={{ position: "relative", zIndex: 2, maxWidth: 900, margin: "0 auto", width: "100%", textAlign: "center" }}>
+        
+        {/* Headline */}
         <h1 style={{
           fontFamily: "'Fraunces', serif",
-          fontSize: "clamp(38px, 6vw, 64px)",
-          color: "#F5F3ED",
-          lineHeight: 1.12,
-          marginBottom: 20,
-          fontWeight: 600,
-          textAlign: "center",
+          fontSize: "clamp(32px, 5vw, 52px)",
+          color: "#fff",
+          lineHeight: 1.15,
+          marginBottom: 8,
+          fontWeight: 700,
         }}>
-          Tell us where you're going.{" "}
-          <span style={{
-            background: "linear-gradient(135deg, #FF8B5E, #FFB088)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-          }}>We'll show you who's driving there.</span>
+          SERVICES ACROSS <span style={{ color: "#FF8B5E" }}>MULTIPLE CITIES</span>
         </h1>
 
-        <p style={{ color: "#9CA3C4", fontSize: 16, textAlign: "center", maxWidth: 480, margin: "0 auto 40px", lineHeight: 1.7 }}>
-          Verified local cab owners across Bilimora, Navsari & Surat — compare fuel type and price before you book.
-        </p>
-
-        <form onSubmit={handleSubmit} style={{
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: 18,
-          padding: 10,
-          display: "flex",
-          gap: 10,
-          backdropFilter: "blur(20px)",
-          boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
-        }} className="cc-search-form">
+        {/* Search Card */}
+        <div style={{
+          background: "#fff",
+          borderRadius: 20,
+          padding: "28px 32px",
+          marginTop: 32,
+          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+        }}>
+          {/* Tabs */}
           <div style={{
-            flex: 1, display: "flex", alignItems: "center", gap: 10,
-            background: "rgba(0,0,0,0.2)", borderRadius: 12, padding: "0 16px",
+            display: "flex", justifyContent: "center", marginBottom: 24,
+            border: "1px solid #e0e0e0", borderRadius: 8, overflow: "hidden",
           }}>
-            <MdLocationOn size={20} color="#FF8B5E" />
-            <input
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              placeholder="Where do you want to go? e.g. Dwarka, Surat..."
-              style={{
-                flex: 1, background: "transparent", border: "none", outline: "none",
-                color: "#F5F3ED", fontSize: 15, padding: "16px 0", fontFamily: "inherit",
-              }}
-            />
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  flex: 1,
+                  padding: "12px 16px",
+                  background: activeTab === tab ? "#FF8B5E" : "#fff",
+                  color: activeTab === tab ? "#fff" : "#666",
+                  border: "none",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: "0.5px",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  borderRight: tab !== "AIRPORT" ? "1px solid #e0e0e0" : "none",
+                }}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
-          <button type="submit" style={{
-            display: "flex", alignItems: "center", gap: 8,
-            background: "linear-gradient(135deg, #FF8B5E, #FF6B35)",
-            color: "#14182B", border: "none", borderRadius: 12,
-            padding: "0 26px", fontWeight: 700, fontSize: 14, cursor: "pointer",
-            boxShadow: "0 8px 24px rgba(255,139,94,0.35)",
-            transition: "transform 0.2s",
-          }}
-            onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
-            onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
-          >
-            <MdSearch size={18} /> Search Cabs
-          </button>
-        </form>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginTop: 24 }}>
-          <span style={{ color: "#9CA3C4", fontSize: 12, marginRight: 4, alignSelf: "center" }}>Popular:</span>
-          {popularDestinations.map((d) => (
-            <button key={d} onClick={() => handleChipClick(d)} type="button" style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "#F5F3ED", fontSize: 12.5, padding: "7px 16px", borderRadius: 40,
-              cursor: "pointer", transition: "all 0.2s",
+          {/* Form Fields */}
+          <form onSubmit={handleSubmit}>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: showReturnDate 
+                ? "1fr 1fr 1fr 1fr 1fr" 
+                : "1fr 1fr 1fr 1fr",
+              gap: 16,
+              alignItems: "end",
+              marginBottom: 20,
+            }} className="hero-form-grid">
+              
+              {/* FROM */}
+              <div style={{ textAlign: "left" }}>
+                <label style={{ display: "block", color: "#333", fontSize: 11, fontWeight: 700, letterSpacing: "1px", marginBottom: 8, textTransform: "uppercase" }}>
+                  {activeTab === "LOCAL" ? "CITY" : activeTab === "AIRPORT" ? "TRIP" : "FROM"}
+                </label>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  borderBottom: "2px solid #e0e0e0", paddingBottom: 8,
+                }}>
+                  <MdLocationOn size={18} color="#FF8B5E" />
+                  {activeTab === "AIRPORT" ? (
+                    <select value={from} onChange={(e) => setFrom(e.target.value)} style={{
+                      flex: 1, border: "none", outline: "none", fontSize: 14, color: "#333", background: "transparent",
+                    }}>
+                      <option>Drop to Airport</option>
+                      <option>Pickup from Airport</option>
+                    </select>
+                  ) : (
+                    <input
+                      value={from}
+                      onChange={(e) => setFrom(e.target.value)}
+                      placeholder="Enter city"
+                      style={{
+                        flex: 1, border: "none", outline: "none", fontSize: 14, color: "#333", background: "transparent",
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Swap Icon (mobile pe hide hoga) */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingBottom: 8 }} className="swap-icon">
+                <button type="button" onClick={() => { const t = from; setFrom(to); setTo(t); }} style={{
+                  background: "#f5f5f5", border: "none", borderRadius: "50%",
+                  width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer", color: "#FF8B5E",
+                }}>
+                  <MdSwapHoriz size={20} />
+                </button>
+              </div>
+
+              {/* TO */}
+              <div style={{ textAlign: "left" }}>
+                <label style={{ display: "block", color: "#333", fontSize: 11, fontWeight: 700, letterSpacing: "1px", marginBottom: 8, textTransform: "uppercase" }}>
+                  {activeTab === "LOCAL" ? "" : activeTab === "AIRPORT" ? "PICKUP ADDRESS" : "TO"}
+                </label>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  borderBottom: "2px solid #e0e0e0", paddingBottom: 8,
+                }}>
+                  <MdLocationOn size={18} color="#FF8B5E" />
+                  <input
+                    value={to}
+                    onChange={(e) => setTo(e.target.value)}
+                    placeholder={activeTab === "AIRPORT" ? "Enter Pickup Location" : "Enter destination"}
+                    style={{
+                      flex: 1, border: "none", outline: "none", fontSize: 14, color: "#333", background: "transparent",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* PICK UP DATE */}
+              <div style={{ textAlign: "left" }}>
+                <label style={{ display: "block", color: "#333", fontSize: 11, fontWeight: 700, letterSpacing: "1px", marginBottom: 8, textTransform: "uppercase" }}>
+                  {showReturnDate ? "PICK UP DATE" : "PICK UP DATE"}
+                </label>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  borderBottom: "2px solid #e0e0e0", paddingBottom: 8,
+                }}>
+                  <MdDateRange size={18} color="#FF8B5E" />
+                  <input
+                    type="date"
+                    value={pickupDate}
+                    onChange={(e) => setPickupDate(e.target.value)}
+                    style={{
+                      flex: 1, border: "none", outline: "none", fontSize: 14, color: "#333", background: "transparent",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* RETURN DATE (Round Trip only) */}
+              {showReturnDate && (
+                <div style={{ textAlign: "left" }}>
+                  <label style={{ display: "block", color: "#333", fontSize: 11, fontWeight: 700, letterSpacing: "1px", marginBottom: 8, textTransform: "uppercase" }}>
+                    RETURN DATE
+                  </label>
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    borderBottom: "2px solid #e0e0e0", paddingBottom: 8,
+                  }}>
+                    <MdDateRange size={18} color="#FF8B5E" />
+                    <input
+                      type="date"
+                      value={returnDate}
+                      onChange={(e) => setReturnDate(e.target.value)}
+                      style={{
+                        flex: 1, border: "none", outline: "none", fontSize: 14, color: "#333", background: "transparent",
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* PICK UP TIME */}
+              {!showReturnDate && (
+                <div style={{ textAlign: "left" }}>
+                  <label style={{ display: "block", color: "#333", fontSize: 11, fontWeight: 700, letterSpacing: "1px", marginBottom: 8, textTransform: "uppercase" }}>
+                    PICK UP TIME
+                  </label>
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    borderBottom: "2px solid #e0e0e0", paddingBottom: 8,
+                  }}>
+                    <MdAccessTime size={18} color="#FF8B5E" />
+                    <input
+                      type="time"
+                      value={pickupTime}
+                      onChange={(e) => setPickupTime(e.target.value)}
+                      style={{
+                        flex: 1, border: "none", outline: "none", fontSize: 14, color: "#333", background: "transparent",
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Explore Cabs Button */}
+            <button type="submit" style={{
+              background: "linear-gradient(135deg, #FF8B5E, #FF6B35)",
+              color: "#fff", border: "none", borderRadius: 8,
+              padding: "14px 48px", fontWeight: 700, fontSize: 15,
+              cursor: "pointer", letterSpacing: "1px",
+              boxShadow: "0 8px 24px rgba(255,107,53,0.35)",
+              transition: "transform 0.2s, box-shadow 0.2s",
             }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "#5ED4C4"; e.currentTarget.style.color = "#5ED4C4"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "#F5F3ED"; }}
-            >{d}</button>
-          ))}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 30px rgba(255,107,53,0.45)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(255,107,53,0.35)"; }}
+            >
+              EXPLORE CABS
+            </button>
+          </form>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: 48, marginTop: 64, flexWrap: "wrap" }}>
-          {[
-            { num: "40+", label: "Verified Cars" },
-            { num: "12", label: "Destinations" },
-            { num: "4.7★", label: "Avg Rating" },
-          ].map((s) => (
-            <div key={s.label} style={{ textAlign: "center" }}>
-              <div style={{ fontFamily: "'Fraunces', serif", fontSize: 30, color: "#FF8B5E", fontWeight: 600 }}>{s.num}</div>
-              <div style={{ color: "#9CA3C4", fontSize: 11, letterSpacing: "1.5px", textTransform: "uppercase", marginTop: 4 }}>{s.label}</div>
-            </div>
+        {/* Popular Destinations Chips */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginTop: 28 }}>
+          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, marginRight: 4, alignSelf: "center" }}>Popular:</span>
+          {popularDestinations.map((d) => (
+            <button key={d} onClick={() => handleChipClick(d)} type="button" style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              color: "#fff", fontSize: 12.5, padding: "7px 16px", borderRadius: 40,
+              cursor: "pointer", transition: "all 0.2s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#FF8B5E"; e.currentTarget.style.color = "#FF8B5E"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "#fff"; }}
+            >{d}</button>
           ))}
         </div>
       </div>
 
       <style>{`
-        @media(max-width: 640px) {
-          .cc-search-form { flex-direction: column; }
+        @media(max-width: 768px) {
+          .hero-form-grid { 
+            grid-template-columns: 1fr !important; 
+            gap: 16px !important;
+          }
+          .swap-icon { display: none !important; }
         }
       `}</style>
     </section>
