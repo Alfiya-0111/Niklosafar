@@ -13,7 +13,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", color: "#F5F0E8", background: "#0A0A1A" }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", color: "#F5F0E8", }}>
       <Navbar />
       <Hero onSearch={handleSearch} />
       <Footer />
