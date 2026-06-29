@@ -55,11 +55,11 @@ export default function Navbar() {
               onMouseLeave={e => e.target.style.color = "#9CA3C4"}
             >{l.label}</a>
           ))}
-          <a href={OWNER_WHATSAPP} target="_blank" rel="noreferrer" style={{
+          <Link to="/subscribe"   style={{
             background: "linear-gradient(135deg, #FF8B5E, #FF6B35)",
             color: "#14182B", padding: "8px 20px", borderRadius: 8,
             fontSize: 13, fontWeight: 700, textDecoration: "none",
-          }}>List Your Car</a>
+          }}>List Your Car</Link>
         </div>
 
         <button className="cc-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{
